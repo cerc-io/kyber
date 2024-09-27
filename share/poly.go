@@ -408,11 +408,11 @@ func (s byIndexPub) Len() int           { return len(s) }
 func (s byIndexPub) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s byIndexPub) Less(i, j int) bool { return s[i].I < s[j].I }
 
-// xyCommits is the public version of xScalars.
+// xyCommits is the public version of xyScalar.
 func xyCommit(g kyber.Group, shares []*PubShare, t, n int) (map[int]kyber.Scalar, map[int]kyber.Point) {
 	// we are sorting first the shares since the shares may be unrelated for
 	// some applications. In this case, all participants needs to interpolate on
-	// the exact same order shares.
+	// the exact same order of shares.
 	sorted := make([]*PubShare, 0, n)
 	for _, share := range shares {
 		if share != nil {

@@ -8,24 +8,26 @@
 // verifier can check the validity of the received share. The protocol has the
 // following steps:
 //
-//   1) The dealer send a Deal to every verifiers using `Deals()`. Each deal must
-//   be sent securely to one verifier whose public key is at the same index than
-//   the index of the Deal.
+//  1. The dealer sends a Deal to every verifier using `Deals()`. Each deal must
+//     be sent securely to one verifier whose public key is at the same index as
+//     the index of the Deal.
 //
-//   2) Each verifier processes the Deal with `ProcessDeal`.
-//   This function returns a Response which can be twofold:
-//   - an approval, to confirm a correct deal
-//   - a complaint to announce an incorrect deal notifying others that the
+//  2. Each verifier processes the Deal with `ProcessDeal`.
+//     This function returns a Response which can be twofold:
+//     - an approval, to confirm a correct deal
+//     - a complaint to announce an incorrect deal notifying others that the
 //     dealer might be malicious.
-//	 All Responses must be broadcasted to every verifiers and the dealer.
-//   3) The dealer can respond to each complaint by a justification revealing the
-//   share he originally sent out to the accusing verifier. This is done by
-//   calling `ProcessResponse` on the `Dealer`.
-//   4) The verifiers refuse the shared secret and abort the protocol if there
-//   are at least t complaints OR if a Justification is wrong. The verifiers
-//   accept the shared secret if there are at least t approvals at which point
-//   any t out of n verifiers can reveal their shares to reconstruct the shared
-//   secret.
+//     All Responses must be broadcast to every verifier and the dealer.
+//
+//  3. The dealer can respond to each complaint by a justification revealing the
+//     share he originally sent out to the accusing verifier. This is done by
+//     calling `ProcessResponse` on the `Dealer`.
+//
+//  4. The verifiers refuse the shared secret and abort the protocol if there
+//     are at least t complaints OR if a Justification is wrong. The verifiers
+//     accept the shared secret if there are at least t approvals at which point
+//     any t out of n verifiers can reveal their shares to reconstruct the shared
+//     secret.
 package vss
 
 import (
@@ -252,7 +254,7 @@ func (d *Dealer) EncryptedDeals() ([]*EncryptedDeal, error) {
 
 // ProcessResponse analyzes the given Response. If it's a valid complaint, then
 // it returns a Justification. This Justification must be broadcasted to every
-// participants. If it's an invalid complaint, it returns an error about the
+// participant. If it's an invalid complaint, it returns an error about the
 // complaint. The verifiers will also ignore an invalid Complaint.
 func (d *Dealer) ProcessResponse(r *Response) (*Justification, error) {
 	if err := d.verifyResponse(r); err != nil {
@@ -365,7 +367,7 @@ func NewVerifier(suite Suite, longterm kyber.Scalar, dealerKey kyber.Point,
 // ProcessEncryptedDeal decrypt the deal received from the Dealer.
 // If the deal is valid, i.e. the verifier can verify its shares
 // against the public coefficients and the signature is valid, an approval
-// response is returned and must be broadcasted to every participants
+// response is returned and must be broadcasted to every participant
 // including the dealer.
 // If the deal itself is invalid, it returns a complaint response that must be
 // broadcasted to every other participants including the dealer.
@@ -488,7 +490,7 @@ func (v *Verifier) SessionID() []byte {
 func RecoverSecret(suite Suite, deals []*Deal, n, t int) (kyber.Scalar, error) {
 	shares := make([]*share.PriShare, len(deals))
 	for i, deal := range deals {
-		// all sids the same
+		// all sides the same
 		if bytes.Equal(deal.SessionID, deals[0].SessionID) {
 			shares[i] = deal.SecShare
 		} else {
@@ -536,7 +538,7 @@ func newAggregator(suite Suite, dealer kyber.Point, verifiers, commitments []kyb
 var errDealAlreadyProcessed = errors.New("vss: verifier already received a deal")
 
 // VerifyDeal analyzes the deal and returns an error if it's incorrect. If
-// inclusion is true, it also returns an error if it the second time this struct
+// inclusion is true, it also returns an error if it is the second time this struct
 // analyzes a Deal.
 func (a *aggregator) VerifyDeal(d *Deal, inclusion bool) error {
 	if a.deal != nil && inclusion {

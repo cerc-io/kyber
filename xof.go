@@ -9,7 +9,7 @@ import (
 // primitive that can take arbitrary input in the same way a hash
 // function does, and then create a stream of output, up to a limit
 // determined by the size of the internal state of the hash function
-// the underlies the XOF.
+// that underlies the XOF.
 //
 // When XORKeyStream is called with zeros for the source, an XOF
 // also acts as a PRNG. If it is seeded with an appropriate amount

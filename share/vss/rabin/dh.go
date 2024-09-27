@@ -19,7 +19,7 @@ func dhExchange(suite Suite, ownPrivate kyber.Scalar, remotePublic kyber.Point) 
 
 var sharedKeyLength = 32
 
-// newAEAD returns the AEAD cipher to be use to encrypt a share
+// newAEAD returns the AEAD cipher to be used to encrypt a share
 func newAEAD(fn func() hash.Hash, preSharedKey kyber.Point, context []byte) (cipher.AEAD, error) {
 	preBuff, _ := preSharedKey.MarshalBinary()
 	reader := hkdf.New(fn, preBuff, nil, context)

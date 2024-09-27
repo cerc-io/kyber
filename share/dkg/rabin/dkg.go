@@ -2,37 +2,37 @@
 // "Secure Distributed Key Generation for Discrete-Log
 // Based Cryptosystems" by R. Gennaro, S. Jarecki, H. Krawczyk, and T. Rabin.
 // DKG enables a group of participants to generate a distributed key
-// with each participants holding only a share of the key. The key is also
+// with each participant holding only a share of the key. The key is also
 // never computed locally but generated distributively whereas the public part
-// of the key is known by every participants.
+// of the key is known by every participant.
 // The underlying basis for this protocol is the VSS protocol implemented in the
 // share/vss package.
 //
 // The protocol works as follow:
 //
-//   1. Each participant instantiates a DistKeyShare (DKS) struct.
-//   2. Then each participant runs an instance of the VSS protocol:
+//  1. Each participant instantiates a DistKeyGenerator struct.
+//  2. Then each participant runs an instance of the VSS protocol:
 //     - each participant generates their deals with the method `Deals()` and then
-//      sends them to the right recipient.
+//     sends them to the right recipient.
 //     - each participant processes the received deal with `ProcessDeal()` and
-//      broadcasts the resulting response.
+//     broadcasts the resulting response.
 //     - each participant processes the response with `ProcessResponse()`. If a
-//      justification is returned, it must be broadcasted.
-//   3. Each participant can check if step 2. is done by calling
-//   `Certified()`.Those participants where Certified() returned true, belong to
-//   the set of "qualified" participants who will generate the distributed
-//   secret. To get the list of qualified participants, use QUAL().
-//   4. Each QUAL participant generates their secret commitments calling
-//    `SecretCommits()` and broadcasts them to the QUAL set.
-//   5. Each QUAL participant processes the received secret commitments using
-//    `SecretCommits()`. If there is an error, it can return a commitment complaint
-//    (ComplaintCommits) that must be broadcasted to the QUAL set.
-//   6. Each QUAL participant receiving a complaint can process it with
-//    `ProcessComplaintCommits()` which returns the secret share
-//    (ReconstructCommits) given from the malicious participant. This structure
-//    must be broadcasted to all the QUAL participant.
-//   7. At this point, every QUAL participant can issue the distributed key by
-//    calling `DistKeyShare()`.
+//     justification is returned, it must be broadcasted.
+//  3. Each participant can check if step 2. is done by calling
+//     `Certified()`. Those participants where Certified() returned true belong to
+//     the set of "qualified" participants who will generate the distributed
+//     secret. To get the list of qualified participants, use QUAL().
+//  4. Each QUAL participant generates their secret commitments calling
+//     `SecretCommits()` and broadcasts them to the QUAL set.
+//  5. Each QUAL participant processes the received secret commitments using
+//     `ProcessSecretCommits()`. If there is an error, it can return a commitment
+//     complaint (ComplaintCommits) that must be broadcasted to the QUAL set.
+//  6. Each QUAL participant receiving a complaint can process it with
+//     `ProcessComplaintCommits()` which returns the secret share
+//     (ReconstructCommits) given from the malicious participant. This structure
+//     must be broadcasted to all the QUAL participants.
+//  7. At this point, every QUAL participant can issue the distributed key by
+//     calling `DistKeyShare()`.
 package dkg
 
 import (
@@ -79,8 +79,9 @@ func (d *DistKeyShare) Commitments() []kyber.Point {
 
 // Deal holds the Deal for one participant as well as the index of the issuing
 // Dealer.
-//  NOTE: Doing that in vss.go would be possible but then the Dealer is always
-//  assumed to be a member of the participants. It's only the case here.
+//
+//	NOTE: Doing that in vss.go would be possible but then the Dealer is always
+//	assumed to be a member of the participants. It's only the case here.
 type Deal struct {
 	// Index of the Dealer in the list of participants
 	Index uint32
@@ -222,9 +223,9 @@ func NewDistKeyGenerator(suite Suite, longterm kyber.Scalar, participants []kybe
 // to which participant a deal belongs to, loop over the keys as indices in
 // the list of participants:
 //
-//   for i,dd := range distDeals {
-//      sendTo(participants[i],dd)
-//   }
+//	for i,dd := range distDeals {
+//	   sendTo(participants[i],dd)
+//	}
 //
 // This method panics if it can't process its own deal.
 func (d *DistKeyGenerator) Deals() (map[int]*Deal, error) {
@@ -262,7 +263,7 @@ func (d *DistKeyGenerator) Deals() (map[int]*Deal, error) {
 }
 
 // ProcessDeal takes a Deal created by Deals() and stores and verifies it. It
-// returns a Response to broadcast to every other participants. It returns an
+// returns a Response to broadcast to every other participant. It returns an
 // error in case the deal has already been stored, or if the deal is incorrect
 // (see `vss.Verifier.ProcessEncryptedDeal()`).
 func (d *DistKeyGenerator) ProcessDeal(dd *Deal) (*Response, error) {
@@ -363,7 +364,7 @@ func (d *DistKeyGenerator) Certified() bool {
 
 // QUAL returns the index in the list of participants that forms the QUALIFIED
 // set as described in the "New-DKG" protocol by Rabin. Basically, it consists
-// of all participants that are not disqualified after having  exchanged all
+// of all participants that are not disqualified after having exchanged all
 // deals, responses and justification. This is the set that is used to extract
 // the distributed public key with SecretCommits() and ProcessSecretCommits().
 func (d *DistKeyGenerator) QUAL() []int {
@@ -607,12 +608,12 @@ func (d *DistKeyGenerator) Finished() bool {
 	return nb >= d.t && ret
 }
 
-// DistKeyShare generates the distributed key relative to this receiver
+// DistKeyShare generates the distributed key relative to this receiver.
 // It throws an error if something is wrong such as not enough deals received.
 // The shared secret can be computed when all deals have been sent and
 // basically consists of a public point and a share. The public point is the sum
-// of all aggregated individual public commits of each individual secrets.
-// the share is evaluated from the global Private Polynomial, basically SUM of
+// of all aggregated individual public commits of each individual secret.
+// The share is evaluated from the global Private Polynomial, basically SUM of
 // fj(i) for a receiver i.
 func (d *DistKeyGenerator) DistKeyShare() (*DistKeyShare, error) {
 	if !d.Certified() {
