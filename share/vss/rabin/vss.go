@@ -143,7 +143,7 @@ func NewDealer(suite Suite, longterm, secret kyber.Scalar, verifiers []kyber.Poi
 		verifiers: verifiers,
 	}
 	if !validT(t, verifiers) {
-		return nil, fmt.Errorf("dealer: t %d invalid", t)
+		return nil, fmt.Errorf("dealer: t=%d invalid with %d verifiers", t, len(verifiers))
 	}
 	d.t = t
 
