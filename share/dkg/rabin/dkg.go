@@ -359,7 +359,7 @@ func (d *DistKeyGenerator) SetTimeout() {
 // vss.Verifier.DealCertified()). If the distribution is certified, the protocol
 // can continue using d.SecretCommits().
 func (d *DistKeyGenerator) Certified() bool {
-	return len(d.QUAL()) >= d.t
+	return d.dealer.DealCertified() && len(d.QUAL()) >= d.t
 }
 
 // QUAL returns the index in the list of participants that forms the QUALIFIED
