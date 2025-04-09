@@ -217,6 +217,21 @@ func NewDistKeyGenerator(suite Suite, longterm kyber.Scalar, participants []kybe
 	}, nil
 }
 
+// Index returns the index of this participant in the list of participants.
+func (d *DistKeyGenerator) Index() uint32 {
+	return d.index
+}
+
+// Participants returns the list of participant public keys.
+func (d *DistKeyGenerator) Participants() []kyber.Point {
+	return d.participants
+}
+
+// Threshold returns the signature threshold parameter t.
+func (d *DistKeyGenerator) Threshold() int {
+	return d.t
+}
+
 // Deals returns all the deals that must be broadcasted to all
 // participants. The deal corresponding to this DKG is already added
 // to this DKG and is ommitted from the returned map. To know
